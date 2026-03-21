@@ -17,7 +17,7 @@ import com.example.taotify.ui.theme.CircularStd
 import com.example.taotify.ui.theme.Secondary04
 
 @Composable
-fun Header(
+fun PageHeader(
   label: String,
 ) {
   Row (

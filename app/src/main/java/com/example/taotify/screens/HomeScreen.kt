@@ -16,7 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.taotify.components.Header
+import com.example.taotify.components.PageHeader
 import com.example.taotify.components.playlist.PlayListsContent
 import com.example.taotify.network.model.Playlist
 import com.example.taotify.session.SessionProvider
@@ -94,7 +94,7 @@ fun HomeScreen(
   }
 
   Column(modifier.padding(16.dp)) {
-    Header("Home")
+    PageHeader("Home")
 
     Box(
       modifier = Modifier
