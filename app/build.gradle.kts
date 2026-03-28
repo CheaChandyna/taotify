@@ -2,6 +2,9 @@ plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.android)
   alias(libs.plugins.kotlin.compose)
+
+  id("com.google.devtools.ksp")
+  id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -67,4 +70,11 @@ dependencies {
 
   // load and display art cover
   implementation("io.coil-kt:coil-compose:2.6.0")
+
+  implementation("androidx.navigation:navigation-compose:2.9.7")
+  implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+  implementation("androidx.hilt:hilt-navigation-fragment:1.2.0")
+
+  implementation("com.google.dagger:hilt-android:2.51.1")
+  ksp("com.google.dagger:hilt-android-compiler:2.51.1")
 }
