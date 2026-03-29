@@ -1,6 +1,7 @@
 package com.example.taotify.network
 
-import com.example.taotify.network.model.Playlists
+import com.example.taotify.data.model.Playlist
+import com.example.taotify.data.model.Playlists
 import com.google.gson.annotations.SerializedName
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -28,7 +29,8 @@ data class SubsonicMeta<T>(
   val type: String,
   val serverVersion: String,
   val openSubsonic: Boolean,
-  val playlists: T? = null
+  val playlists: T? = null,
+  val playlist: T? = null,
 )
 
 interface ApiService {
@@ -51,4 +53,15 @@ interface ApiService {
     @Query("f") format: String = "json",
     @Query("t") token: String
   ): SubsonicResponse<Playlists>
+
+  @GET("rest/getPlaylist")
+  suspend fun getPlaylist(
+    @Query("s") salt: String,
+    @Query("v") apiVersion: String,
+    @Query("c") client: String = "taotify",
+    @Query("u") username: String,
+    @Query("f") format: String = "json",
+    @Query("t") token: String,
+    @Query("id") id: String
+  ): SubsonicResponse<Playlist>
 }

@@ -8,11 +8,12 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.taotify.network.model.Playlist
+import com.example.taotify.data.model.Playlist
 
 @Composable
 fun PlayListsContent(
-  playlists: List<Playlist>
+  playlists: List<Playlist>,
+  onItemClick: (Playlist) -> Unit
 ) {
   LazyVerticalGrid(
     columns = GridCells.Fixed(2),
@@ -21,7 +22,10 @@ fun PlayListsContent(
     modifier = Modifier.padding(0.dp, 16.dp)
   ) {
     items(playlists) { playlist ->
-      PlayListListing(playlist.name, playlist.coverArt)
+      PlayListListing(
+        playlist = playlist,
+        onItemClick = onItemClick
+      )
     }
   }
 }
