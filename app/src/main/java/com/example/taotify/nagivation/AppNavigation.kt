@@ -22,6 +22,7 @@ import com.example.taotify.data.UserPreferences
 import com.example.taotify.screens.HomeScreen
 import com.example.taotify.screens.LibraryScreen
 import com.example.taotify.screens.LoginScreen
+import com.example.taotify.screens.MediaPlayingScreen
 import com.example.taotify.screens.PlaylistScreen
 import com.example.taotify.screens.SearchScreen
 import com.example.taotify.session.SessionProvider
@@ -78,6 +79,11 @@ fun AppNavigation(
           playlistId = playlistId,
           onBack = { navController.popBackStack() }
         )
+      }
+
+      composable(Screen.MediaPlayingScreen.route) {
+        backStackEntry -> val songId = backStackEntry.arguments?.getString("songId") ?: ""
+        MediaPlayingScreen()
       }
     }
   }
