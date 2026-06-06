@@ -69,7 +69,7 @@ fun AppNavigation(
           HomeScreen(navController = navController, audioViewModel = audioViewModel)
         }
         composable(Screen.Search.route) {
-          SearchScreen()
+          SearchScreen(audioViewModel = audioViewModel)
         }
         composable(Screen.Library.route) {
           LibraryScreen()

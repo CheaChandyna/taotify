@@ -2,6 +2,7 @@ package com.example.taotify.network
 
 import com.example.taotify.data.model.Playlist
 import com.example.taotify.data.model.Playlists
+import com.example.taotify.data.model.SearchResult3
 import com.example.taotify.data.model.Song
 import com.google.gson.annotations.SerializedName
 import retrofit2.http.GET
@@ -33,6 +34,16 @@ data class SubsonicMeta<T>(
   val playlists: T? = null,
   val playlist: T? = null,
   val song: T? = null
+)
+
+data class SearchWrapper(
+  @SerializedName("subsonic-response")
+  val response: SearchMeta
+)
+
+data class SearchMeta(
+  val status: String,
+  val searchResult3: SearchResult3? = null
 )
 
 interface ApiService {
@@ -77,4 +88,18 @@ interface ApiService {
     @Query("t") token: String,
     @Query("id") id: String
   ): SubsonicResponse<Song>
+
+  @GET("rest/search3")
+  suspend fun search3(
+    @Query("s") salt: String,
+    @Query("v") apiVersion: String,
+    @Query("c") client: String = "taotify",
+    @Query("u") username: String,
+    @Query("f") format: String = "json",
+    @Query("t") token: String,
+    @Query("query") query: String,
+    @Query("artistCount") artistCount: Int = 20,
+    @Query("albumCount") albumCount: Int = 20,
+    @Query("songCount") songCount: Int = 20
+  ): SearchWrapper
 }
