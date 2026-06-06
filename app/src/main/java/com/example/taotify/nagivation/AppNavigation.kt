@@ -72,7 +72,7 @@ fun AppNavigation(
           SearchScreen(audioViewModel = audioViewModel)
         }
         composable(Screen.Library.route) {
-          LibraryScreen()
+          LibraryScreen(navController = navController)
         }
 
         composable(Screen.Playlist.route) { backStackEntry ->
