@@ -7,73 +7,94 @@ import com.example.taotify.utility.FetchResult
 import javax.inject.Inject
 
 class PlaylistRepository @Inject constructor() {
+
+  private fun session() = SessionProvider.session
+
+  private fun isSessionValid(session: com.example.taotify.data.UserSession?) =
+    session != null &&
+      session.server.isNotBlank() &&
+      session.username.isNotBlank() &&
+      session.salt.isNotBlank() &&
+      session.token.isNotBlank()
+
   suspend fun getPlaylists(): FetchResult<List<Playlist>> {
-    val session = SessionProvider.session ?: return FetchResult.InvalidSession
-    val server = session.server
-    val username = session.username
-    val salt = session.salt
-    val token = session.token
-
-    if (
-      server.isNullOrBlank() ||
-      username.isNullOrBlank() ||
-      salt.isNullOrBlank() ||
-      token.isNullOrBlank()
-    ) {
-      return FetchResult.InvalidSession
-    }
-
+    val session = session() ?: return FetchResult.InvalidSession
+    if (!isSessionValid(session)) return FetchResult.InvalidSession
     return try {
-      val api = ApiClient.create(server)
-
+      val api = ApiClient.create(session.server)
       val response = api.getPlaylists(
-        salt = salt,
-        apiVersion = "1.16.1",
-        username = username,
-        token = token
+        salt = session.salt, apiVersion = "1.16.1",
+        username = session.username, token = session.token
       )
-
-      val actualPlaylists = response.`subsonic-response`.playlists?.playlist ?: emptyList()
-      FetchResult.Success(actualPlaylists)
-
+      FetchResult.Success(response.`subsonic-response`.playlists?.playlist ?: emptyList())
     } catch (e: Exception) {
-      return FetchResult.UnknownError(e.message)
+      FetchResult.UnknownError(e.message)
     }
   }
 
   suspend fun getPlaylist(playlistId: String): FetchResult<List<Song>> {
-    val session = SessionProvider.session ?: return FetchResult.InvalidSession
-    val server = session.server
-    val username = session.username
-    val salt = session.salt
-    val token = session.token
-
-    if (
-      server.isNullOrBlank() ||
-      username.isNullOrBlank() ||
-      salt.isNullOrBlank() ||
-      token.isNullOrBlank()
-    ) {
-      return FetchResult.InvalidSession
-    }
-
+    val session = session() ?: return FetchResult.InvalidSession
+    if (!isSessionValid(session)) return FetchResult.InvalidSession
     return try {
-      val api = ApiClient.create(server)
-
+      val api = ApiClient.create(session.server)
       val response = api.getPlaylist(
-        salt = salt,
-        apiVersion = "1.16.1",
-        username = username,
-        token = token,
-        id = playlistId,
+        salt = session.salt, apiVersion = "1.16.1",
+        username = session.username, token = session.token,
+        id = playlistId
       )
-
-      val actualPlaylist = response.`subsonic-response`.playlist?.entry ?: emptyList()
-      FetchResult.Success(actualPlaylist)
-
-
+      FetchResult.Success(response.`subsonic-response`.playlist?.entry ?: emptyList())
     } catch (e: Exception) {
-      return FetchResult.UnknownError(e.message)
+      FetchResult.UnknownError(e.message)
+    }
+  }
+
+  suspend fun createPlaylist(name: String): FetchResult<Playlist> {
+    val session = session() ?: return FetchResult.InvalidSession
+    if (!isSessionValid(session)) return FetchResult.InvalidSession
+    return try {
+      val api = ApiClient.create(session.server)
+      val response = api.createPlaylist(
+        salt = session.salt, apiVersion = "1.16.1",
+        username = session.username, token = session.token,
+        name = name
+      )
+      val playlist = response.`subsonic-response`.playlist
+        ?: return FetchResult.UnknownError("No playlist returned")
+      FetchResult.Success(playlist)
+    } catch (e: Exception) {
+      FetchResult.UnknownError(e.message)
+    }
+  }
+
+  suspend fun addSongToPlaylist(playlistId: String, songId: String): FetchResult<Unit> {
+    val session = session() ?: return FetchResult.InvalidSession
+    if (!isSessionValid(session)) return FetchResult.InvalidSession
+    return try {
+      val api = ApiClient.create(session.server)
+      api.updatePlaylist(
+        salt = session.salt, apiVersion = "1.16.1",
+        username = session.username, token = session.token,
+        playlistId = playlistId, songIdToAdd = songId
+      )
+      FetchResult.Success(Unit)
+    } catch (e: Exception) {
+      FetchResult.UnknownError(e.message)
+    }
+  }
+
+  suspend fun removeSongFromPlaylist(playlistId: String, songIndex: Int): FetchResult<Unit> {
+    val session = session() ?: return FetchResult.InvalidSession
+    if (!isSessionValid(session)) return FetchResult.InvalidSession
+    return try {
+      val api = ApiClient.create(session.server)
+      api.updatePlaylist(
+        salt = session.salt, apiVersion = "1.16.1",
+        username = session.username, token = session.token,
+        playlistId = playlistId, songIndexToRemove = songIndex
+      )
+      FetchResult.Success(Unit)
+    } catch (e: Exception) {
+      FetchResult.UnknownError(e.message)
     }
   }
 }

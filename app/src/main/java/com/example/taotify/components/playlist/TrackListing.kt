@@ -39,14 +39,14 @@ fun TrackListing(
   entry: Song,
   index: Int,
   onItemClick: (Song) -> Unit,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
+  onMoreClick: ((Song) -> Unit)? = null
 ) {
-
   val coverArtURL = remember(entry.coverArt) {
     MediaRetrieval.getCoverArt(entry.coverArt)
   }
 
-  Box (
+  Box(
     modifier = modifier
       .height(74.dp)
       .fillMaxWidth()
@@ -58,7 +58,6 @@ fun TrackListing(
       modifier = Modifier
         .fillMaxWidth()
         .padding(vertical = 8.dp)
-
     ) {
       Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -67,7 +66,6 @@ fun TrackListing(
           .fillMaxHeight()
           .weight(1f)
       ) {
-
         Box(
           modifier = Modifier.width(30.dp),
           contentAlignment = Alignment.Center
@@ -101,7 +99,7 @@ fun TrackListing(
         Column(
           modifier = Modifier
             .weight(1f)
-            .padding(end = 16.dp),
+            .padding(end = 8.dp),
         ) {
           Text(
             text = entry.title,
@@ -112,29 +110,30 @@ fun TrackListing(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
           )
-
           Text(
-            text = "${entry.playCount}",
+            text = entry.artist ?: entry.album,
             color = Neutral02,
-            fontSize = 16.sp,
+            fontSize = 14.sp,
             fontFamily = CircularStd,
             fontWeight = FontWeight.Medium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
           )
         }
       }
 
       Box(
-        modifier = Modifier.clickable {},
+        modifier = Modifier
+          .clickable(enabled = onMoreClick != null) { onMoreClick?.invoke(entry) }
+          .padding(8.dp),
         contentAlignment = Alignment.Center
       ) {
         Icon(
           painter = painterResource(R.drawable.more),
           tint = Neutral01,
-          contentDescription = null,
+          contentDescription = "More options",
         )
       }
-
-
     }
   }
 }

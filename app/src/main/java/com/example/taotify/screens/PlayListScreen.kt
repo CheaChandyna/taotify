@@ -1,4 +1,5 @@
 package com.example.taotify.screens
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,7 +13,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,8 +25,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.taotify.R
+import com.example.taotify.components.SongActionSheet
 import com.example.taotify.components.playlist.PlayListCover
 import com.example.taotify.components.playlist.TrackListing
+import com.example.taotify.data.model.Song
 import com.example.taotify.data.viewmodel.AudioViewModel
 import com.example.taotify.data.viewmodel.PlaylistsViewModel
 import com.example.taotify.network.MediaRetrieval
@@ -45,15 +50,16 @@ fun PlaylistScreen(
     MediaRetrieval.getCoverArt(playlist?.coverArt ?: "")
   }
 
+  // (song, index-in-playlist) pair for the action sheet
+  var selectedSong by remember { mutableStateOf<Pair<Song, Int>?>(null) }
+
   LaunchedEffect(playlistId) {
     playlistViewModel.fetchPlaylist(playlistId)
   }
 
-  LazyColumn(
-    modifier = modifier.fillMaxSize()
-  ) {
+  LazyColumn(modifier = modifier.fillMaxSize()) {
     item {
-      PlayListCover(coverArtURL, onBack, playlist);
+      PlayListCover(coverArtURL, onBack, playlist)
     }
 
     item {
@@ -63,7 +69,6 @@ fun PlaylistScreen(
           .padding(4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
-
       ) {
         IconButton(
           onClick = { audioViewModel.playQueue(songIds = playlistViewModel.playlistEntries.map { it.id }) },
@@ -77,28 +82,12 @@ fun PlaylistScreen(
           )
         }
 
-        Row(
-          horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-          IconButton(
-//            modifier = Modifier.size(),
-            onClick = { audioViewModel.toggleShuffle() }
-          ) {
+        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+          IconButton(onClick = { audioViewModel.toggleShuffle() }) {
             Icon(
               painter = painterResource(R.drawable.shuffle),
               contentDescription = null,
               tint = if (state.isShuffled) Primary01 else Neutral01,
-            )
-          }
-
-          IconButton(
-//            modifier = Modifier.size(),
-            onClick = {  },
-          ) {
-            Icon(
-              painter = painterResource(R.drawable.more),
-              contentDescription = null,
-              tint = Neutral01,
             )
           }
         }
@@ -108,14 +97,30 @@ fun PlaylistScreen(
     itemsIndexed(playlistViewModel.playlistEntries) { index, entry ->
       TrackListing(
         index = index + 1,
-        entry =  entry,
+        entry = entry,
         modifier = Modifier.padding(horizontal = 16.dp),
-        onItemClick = { entry ->
-            audioViewModel.playQueue(
-              playlistViewModel.playlistEntries.map { it.id },
-              startIndex = index)
-        }
+        onItemClick = {
+          audioViewModel.playQueue(
+            playlistViewModel.playlistEntries.map { it.id },
+            startIndex = index
+          )
+        },
+        onMoreClick = { song -> selectedSong = Pair(song, index) }
       )
     }
+  }
+
+  selectedSong?.let { (song, songIndex) ->
+    SongActionSheet(
+      song = song,
+      playlists = playlistViewModel.playlists.filter { it.id != playlistId },
+      onDismiss = { selectedSong = null },
+      onAddToPlaylist = { target ->
+        playlistViewModel.addSongToPlaylist(target.id, song.id)
+      },
+      onRemoveFromPlaylist = {
+        playlistViewModel.removeSongFromPlaylist(playlistId, songIndex)
+      }
+    )
   }
 }

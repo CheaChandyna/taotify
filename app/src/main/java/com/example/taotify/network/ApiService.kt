@@ -91,6 +91,13 @@ data class Starred2Meta(
   val starred2: SearchResult3? = null
 )
 
+data class StatusWrapper(
+  @SerializedName("subsonic-response")
+  val response: StatusMeta
+)
+
+data class StatusMeta(val status: String)
+
 interface ApiService {
   @GET("rest/ping.view")
   suspend fun ping(
@@ -179,4 +186,28 @@ interface ApiService {
     @Query("f") format: String = "json",
     @Query("t") token: String
   ): Starred2Wrapper
+
+  @GET("rest/createPlaylist")
+  suspend fun createPlaylist(
+    @Query("s") salt: String,
+    @Query("v") apiVersion: String,
+    @Query("c") client: String = "taotify",
+    @Query("u") username: String,
+    @Query("f") format: String = "json",
+    @Query("t") token: String,
+    @Query("name") name: String
+  ): SubsonicResponse<Playlist>
+
+  @GET("rest/updatePlaylist")
+  suspend fun updatePlaylist(
+    @Query("s") salt: String,
+    @Query("v") apiVersion: String,
+    @Query("c") client: String = "taotify",
+    @Query("u") username: String,
+    @Query("f") format: String = "json",
+    @Query("t") token: String,
+    @Query("playlistId") playlistId: String,
+    @Query("songIdToAdd") songIdToAdd: String? = null,
+    @Query("songIndexToRemove") songIndexToRemove: Int? = null
+  ): StatusWrapper
 }

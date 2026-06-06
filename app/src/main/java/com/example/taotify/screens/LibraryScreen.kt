@@ -24,7 +24,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,12 +43,15 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.taotify.R
 import com.example.taotify.components.PageHeader
+import com.example.taotify.components.SongActionSheet
 import com.example.taotify.components.playlist.TrackListing
 import com.example.taotify.data.model.Playlist
 import com.example.taotify.data.model.SearchAlbum
 import com.example.taotify.data.model.SearchArtist
+import com.example.taotify.data.model.Song
 import com.example.taotify.data.viewmodel.AudioViewModel
 import com.example.taotify.data.viewmodel.LibraryViewModel
+import com.example.taotify.data.viewmodel.PlaylistsViewModel
 import com.example.taotify.nagivation.Screen
 import com.example.taotify.network.MediaRetrieval
 import com.example.taotify.ui.theme.CircularStd
@@ -62,9 +68,11 @@ fun LibraryScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
     audioViewModel: AudioViewModel = hiltViewModel(),
-    viewModel: LibraryViewModel = hiltViewModel()
+    viewModel: LibraryViewModel = hiltViewModel(),
+    playlistsViewModel: PlaylistsViewModel = hiltViewModel()
 ) {
     val tabs = listOf("Playlists", "Albums", "Artists", "Songs")
+    var selectedSong by remember { mutableStateOf<Song?>(null) }
 
     Column(
         modifier = modifier
@@ -150,13 +158,25 @@ fun LibraryScreen(
                             TrackListing(
                                 index = index + 1,
                                 entry = song,
-                                onItemClick = { audioViewModel.playSingle(it.id) }
+                                onItemClick = { audioViewModel.playSingle(it.id) },
+                                onMoreClick = { selectedSong = it }
                             )
                         }
                     }
                 }
             }
         }
+    }
+
+    selectedSong?.let { song ->
+        SongActionSheet(
+            song = song,
+            playlists = playlistsViewModel.playlists,
+            onDismiss = { selectedSong = null },
+            onAddToPlaylist = { playlist ->
+                playlistsViewModel.addSongToPlaylist(playlist.id, song.id)
+            }
+        )
     }
 }
 

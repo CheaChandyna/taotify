@@ -34,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -54,10 +55,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.taotify.R
 import com.example.taotify.components.PageHeader
+import com.example.taotify.components.SongActionSheet
 import com.example.taotify.components.playlist.TrackListing
 import com.example.taotify.data.model.SearchAlbum
 import com.example.taotify.data.model.SearchArtist
+import com.example.taotify.data.model.Song
 import com.example.taotify.data.viewmodel.AudioViewModel
+import com.example.taotify.data.viewmodel.PlaylistsViewModel
 import com.example.taotify.data.viewmodel.SearchViewModel
 import com.example.taotify.network.MediaRetrieval
 import com.example.taotify.ui.theme.CircularStd
@@ -74,11 +78,13 @@ import kotlinx.coroutines.delay
 fun SearchScreen(
     modifier: Modifier = Modifier,
     audioViewModel: AudioViewModel = hiltViewModel(),
-    viewModel: SearchViewModel = hiltViewModel()
+    viewModel: SearchViewModel = hiltViewModel(),
+    playlistsViewModel: PlaylistsViewModel = hiltViewModel()
 ) {
     val tabs = listOf("Artists", "Albums", "Songs")
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
     val keyboardController = LocalSoftwareKeyboardController.current
+    var selectedSong by remember { mutableStateOf<Song?>(null) }
 
     LaunchedEffect(viewModel.query) {
         if (viewModel.query.isBlank()) {
@@ -244,6 +250,7 @@ fun SearchScreen(
                                 index = index + 1,
                                 entry = song,
                                 onItemClick = { audioViewModel.playSingle(it.id) },
+                                onMoreClick = { selectedSong = it },
                                 modifier = Modifier.padding(horizontal = 16.dp)
                             )
                         }
@@ -251,6 +258,17 @@ fun SearchScreen(
                 }
             }
         }
+    }
+
+    selectedSong?.let { song ->
+        SongActionSheet(
+            song = song,
+            playlists = playlistsViewModel.playlists,
+            onDismiss = { selectedSong = null },
+            onAddToPlaylist = { playlist ->
+                playlistsViewModel.addSongToPlaylist(playlist.id, song.id)
+            }
+        )
     }
 }
 
