@@ -10,10 +10,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.taotify.ui.theme.CircularStd
+import com.example.taotify.ui.theme.Neutral01
 import com.example.taotify.ui.theme.Neutral02
+import com.example.taotify.ui.theme.Neutral03
+import com.example.taotify.ui.theme.Primary01
+import com.example.taotify.ui.theme.Secondary02
 import com.example.taotify.ui.theme.Secondary04
 
 @Composable
@@ -21,16 +27,17 @@ fun AuthTextField(
   label: String,
   value: String,
   onValueChange: (String) -> Unit,
-  placeHolder: String
+  placeHolder: String,
+  isPassword: Boolean = false
 ) {
-  Column(modifier = Modifier.padding(16.dp, 0.dp)) {
+  Column(modifier = Modifier.fillMaxWidth()) {
     Text(
       text = label,
       fontFamily = CircularStd,
-      fontWeight = FontWeight.Bold,
-      fontSize = 20.sp,
-      color = Secondary04,
-      modifier = Modifier.padding(0.dp, 6.dp)
+      fontWeight = FontWeight.SemiBold,
+      fontSize = 13.sp,
+      color = Neutral01,
+      modifier = Modifier.padding(bottom = 6.dp)
     )
 
     OutlinedTextField(
@@ -40,18 +47,24 @@ fun AuthTextField(
         Text(
           placeHolder,
           fontFamily = CircularStd,
-          fontWeight = FontWeight.Medium
+          fontWeight = FontWeight.Normal,
+          color = Neutral02,
+          fontSize = 15.sp
         )
       },
-      shape = RoundedCornerShape(28.dp),
+      visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
+      shape = RoundedCornerShape(8.dp),
       colors = OutlinedTextFieldDefaults.colors(
-        unfocusedContainerColor = Secondary04,
-        focusedContainerColor = Secondary04,
-        focusedTextColor = Neutral02,
-        unfocusedTextColor = Neutral02
+        unfocusedContainerColor = Secondary02,
+        focusedContainerColor = Secondary02,
+        focusedTextColor = Secondary04,
+        unfocusedTextColor = Secondary04,
+        cursorColor = Primary01,
+        unfocusedBorderColor = Neutral03,
+        focusedBorderColor = Primary01,
       ),
-      modifier = Modifier
-        .fillMaxWidth()
+      singleLine = true,
+      modifier = Modifier.fillMaxWidth()
     )
   }
 }

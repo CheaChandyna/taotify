@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -49,7 +50,7 @@ fun PlayListListing(
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.spacedBy(10.dp),
       modifier = Modifier
-        .width(218.dp)
+        .fillMaxWidth()
         .height(66.dp)
         .padding(8.dp, 0.dp)
     ) {
@@ -61,13 +62,13 @@ fun PlayListListing(
         alignment = Alignment.Center,
         modifier = Modifier
           .size(50.dp)
+          .clip(RoundedCornerShape(4.dp))
           .background(Secondary02)
-          .clip(RoundedCornerShape(25.dp))
       )
 
       Text(
         text = playlist.name,
-        fontSize = 12.sp,
+        fontSize = 13.sp,
         fontFamily = CircularStd,
         color = Secondary04
       )

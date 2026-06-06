@@ -21,7 +21,8 @@ import com.example.taotify.ui.theme.Secondary04
 fun PrimaryButton(
   label: String,
   loading: Boolean,
-  onClick: () -> Unit
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier
 ) {
   FilledTonalButton(
     enabled = !loading,
@@ -30,20 +31,20 @@ fun PrimaryButton(
       disabledContainerColor = Secondary01
     ),
     onClick = onClick,
-    modifier = Modifier.padding(16.dp)
+    modifier = modifier
   ) {
     if (!loading) {
       Text(
         label,
         fontFamily = CircularStd,
         fontWeight = FontWeight.Bold,
-        fontSize = 20.sp,
+        fontSize = 16.sp,
         color = Secondary01,
-        modifier = Modifier.padding(12.dp, 6.dp)
+        modifier = Modifier.padding(vertical = 6.dp)
       )
     } else {
       CircularProgressIndicator(
-        modifier = Modifier.width(24.dp),
+        modifier = Modifier.width(22.dp),
         strokeWidth = 2.dp,
         color = Neutral02,
         trackColor = Secondary04

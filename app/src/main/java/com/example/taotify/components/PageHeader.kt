@@ -3,6 +3,7 @@ package com.example.taotify.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,22 +20,30 @@ import com.example.taotify.ui.theme.Secondary04
 @Composable
 fun PageHeader(
   label: String,
+  trailing: @Composable (() -> Unit)? = null
 ) {
-  Row (
+  Row(
     verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(16.dp)
+    horizontalArrangement = Arrangement.SpaceBetween,
+    modifier = Modifier.fillMaxWidth()
   ) {
-    Image(
-      painter = painterResource(id = R.drawable.taotify),
-      contentDescription = "Logo Image",
-      modifier = Modifier.size(50.dp)
-    )
-    Text(
-      text = label,
-      fontSize = 28.sp,
-      fontFamily = CircularStd,
-      fontWeight = FontWeight.Bold,
-      color = Secondary04
-    )
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+      Image(
+        painter = painterResource(id = R.drawable.taotify),
+        contentDescription = "Logo Image",
+        modifier = Modifier.size(50.dp)
+      )
+      Text(
+        text = label,
+        fontSize = 28.sp,
+        fontFamily = CircularStd,
+        fontWeight = FontWeight.Bold,
+        color = Secondary04
+      )
+    }
+    trailing?.invoke()
   }
 }

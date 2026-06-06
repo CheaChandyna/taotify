@@ -29,6 +29,10 @@ object UserPreferences {
     }
   }
 
+  suspend fun clear(context: Context) {
+    context.dataStore.edit { it.clear() }
+  }
+
   fun session(context: Context) = context.dataStore.data.map { prefs ->
     UserSession(
       prefs[SERVER] ?: "",

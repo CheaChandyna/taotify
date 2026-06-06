@@ -82,21 +82,21 @@ fun NavigationBar(
           }
         },
         icon = {
-          var icon = item.icon
-          if (selectedNavigationIndex.intValue == index) {
-            icon = item.iconBold
-          }
+          val icon = if (selectedNavigationIndex.intValue == index) item.iconBold else item.icon
           Icon(painterResource(icon), contentDescription = item.title)
         },
         label = {
           Text(
             item.title,
-            color = Neutral02,
             fontWeight = if (selectedNavigationIndex.intValue == index) FontWeight.Bold else FontWeight.Normal
           )
         },
         colors = NavigationBarItemDefaults.colors(
           indicatorColor = Secondary01,
+          selectedIconColor = androidx.compose.ui.graphics.Color.White,
+          unselectedIconColor = Neutral02,
+          selectedTextColor = androidx.compose.ui.graphics.Color.White,
+          unselectedTextColor = Neutral02,
         )
       )
     }

@@ -8,6 +8,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -26,6 +27,7 @@ import com.example.taotify.screens.PlaylistScreen
 import com.example.taotify.screens.SearchScreen
 import com.example.taotify.session.SessionProvider
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 @OptIn(UnstableApi::class)
 @Composable
@@ -35,6 +37,7 @@ fun AppNavigation(
   audioViewModel: AudioViewModel = hiltViewModel(),
 ) {
   val navController = rememberNavController()
+  val scope = rememberCoroutineScope()
   var startDestination by remember { mutableStateOf<String?>(null) }
 
   LaunchedEffect(Unit) {
@@ -66,7 +69,19 @@ fun AppNavigation(
 
       navigation(startDestination = Screen.Home.route, route = Screen.Main.route) {
         composable(Screen.Home.route) {
-          HomeScreen(navController = navController, audioViewModel = audioViewModel)
+          HomeScreen(
+            navController = navController,
+            audioViewModel = audioViewModel,
+            onLogout = {
+              scope.launch {
+                SessionProvider.session = null
+                UserPreferences.clear(context)
+                navController.navigate(Screen.Login.route) {
+                  popUpTo(0) { inclusive = true }
+                }
+              }
+            }
+          )
         }
         composable(Screen.Search.route) {
           SearchScreen(audioViewModel = audioViewModel)

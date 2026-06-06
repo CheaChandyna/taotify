@@ -20,8 +20,8 @@ import coil.compose.AsyncImage
 import com.example.taotify.R
 import com.example.taotify.data.model.Playlist
 import com.example.taotify.ui.theme.CircularStd
-import com.example.taotify.ui.theme.Neutral01
 import com.example.taotify.ui.theme.Neutral02
+import com.example.taotify.ui.theme.Secondary02
 import com.example.taotify.ui.theme.Secondary04
 
 @Composable()
@@ -32,7 +32,7 @@ fun PlayListCover(
 ) {
     Box(
       modifier = Modifier
-        .background(color = Neutral01)
+        .background(color = Secondary02)
     ) {
       AsyncImage(
         model = coverArtURL,
